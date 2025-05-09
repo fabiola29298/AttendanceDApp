@@ -15,7 +15,8 @@ export function SessionList({ sessions, onSelectSession }: SessionListProps) {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Sesiones Disponibles</h2>
+            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>
+            <h2 className="text-xl font-semibold mb-4 text-amber-50">Sesiones Disponibles</h2>
             <div className="grid gap-4">
                 {Object.entries(sessions).map(([id, session]) => (
                     <SessionCard

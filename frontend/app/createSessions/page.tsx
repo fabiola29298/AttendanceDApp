@@ -1,8 +1,10 @@
 //dashboard/page.tsx
-'use client'; 
+'use client';
+
 import { usePrivy } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
+import Navbar from '@/components/navbar/Navbar';
 import { SessionList } from '@/components/dashboard/SessionList';
 import { ClaimTokenDialog } from '@/components/dashboard/ClaimTokenDialog';
 import { getAllSessions, isAllowedStudent, getTokenBalance } from '@/lib/services/asistencia';
@@ -70,30 +72,23 @@ export default function Dashboard() {
     if (!authenticated) return null;
 
     return (
-        <div className="max-w-2/3 my-9 p-9 shadow-[0px_2px_0px_0px_rgba(24,25,31,1.00)]  outline-zinc-900 overflow-hidden rounded-xl bg-white/5  ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-blue-500 ">
-            
-             
-            <div className="mb-8 ">
-             
-                <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-br from-gray-200 to-gray-600">
-                    Bienvenido
-                </h1> 
-                <p className="text-sxl text-gray-300">
-                {user?.wallet?.address}
-                </p>
-                <p className="text-sxl mb-8 text-gray-300">
+        <div className="p-8">
+            <Navbar />
+            <div className="mb-8">
+                <h1 className="text-3xl font-semibold">
+                    Bienvenido, {user?.wallet?.address}
+                </h1>
+                <p className="mt-2">
                     Balance: {balance.toString()} tokens
                 </p>
                 {!isAllowed && (
-                    <p className="text-sxl mb-8 text-rose-300 ">
+                    <p className="text-red-500 mt-2">
                         No estás registrado como alumno permitido
                     </p>
-
                 )}
             </div>
 
             {loading ? (
-                 
                 <p>Cargando sesiones...</p>
             ) : (
                 <SessionList
@@ -108,11 +103,7 @@ export default function Dashboard() {
                     onClose={handleCloseDialog}
                     sessionId={selectedSessionId}
                 />
-
             )}
-            
-            
         </div>
-        
     );
 }
