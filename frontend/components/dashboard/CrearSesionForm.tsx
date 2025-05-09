@@ -79,9 +79,9 @@ export default function CrearSesionForm({ onSesionCreada }: CrearSesionFormProps
                     });
                 }
 
-            } catch (e: any) {
-                console.error("Error al crear sesión:", e);
-                const errorMessage = e.shortMessage || e.message || "Ocurrió un error desconocido al crear la sesión.";
+            } catch (parseError) {
+                console.error("Error al crear sesión:", parseError);
+                const errorMessage = `Ocurrió un error desconocido al crear la sesión. ${parseError}`;
                 toast.error(errorMessage, {
                     id: toastId,
                     description: "Por favor, revisa la consola para más detalles o inténtalo de nuevo."

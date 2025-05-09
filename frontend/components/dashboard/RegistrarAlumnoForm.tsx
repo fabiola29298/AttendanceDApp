@@ -44,7 +44,7 @@ export default function RegistrarAlumnoForm({ onAlumnoRegistrado }: RegistrarAlu
             try {
                 toast.loading("Enviando transacción para registrar al alumno...", { id: "register-alumno" });
 
-                const txHash = await registrarAlumno(alumnoAddress as Hex, user as any);
+                const txHash = await registrarAlumno(alumnoAddress) as Hex;
 
                 toast.loading(`Transacción enviada (${txHash.substring(0,10)}...). Esperando confirmación...`, { id: "register-alumno" });
 
@@ -70,10 +70,10 @@ export default function RegistrarAlumnoForm({ onAlumnoRegistrado }: RegistrarAlu
                     });
                 }
 
-            } catch (e: any) {
+            } catch (e) {
                 console.error("Error al registrar alumno:", e);
                 // Intentar mostrar un mensaje de error más específico si es posible
-                const errorMessage = e.shortMessage || e.message || "Ocurrió un error desconocido al registrar al alumno.";
+                const errorMessage = `Ocurrió un error desconocido al registrar al alumno. ${e}`;
                 toast.error(errorMessage, {
                     id: "register-alumno",
                     description: "Por favor, revisa la consola para más detalles o inténtalo de nuevo."

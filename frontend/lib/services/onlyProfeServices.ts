@@ -4,6 +4,7 @@ import { CONTRACT_ABI, CONTRACT_ADDRESS, CONTRACT_PROFE_ROLE_HASH } from '@/lib/
 import { getWalletClient } from '@/lib/viem';  
 import {
     type Hex,
+    type Log,
     keccak256,
     parseAbiItem,
     decodeEventLog,
@@ -130,31 +131,53 @@ export async function esperarReciboTransaccion(txHash: Hex)
 }
 
 const sessionCreadaEventAbi = parseAbiItem('event SessionCreada(uint256 indexed sessionId, bytes32 hash, uint256 deadline)');
+type SessionCreadaEventArgs = {
+    sessionId: bigint;
+    hash: Hex;
+    deadline: bigint;
+};
 
-export function parsearEventoSessionCreada(logs: any[]) { // `any[]` porque el tipo exacto de log depende de la fuente
-    const eventoDecodificado = logs.map(log => {
-        try {
-            // Asegúrate que el log.topics y log.data existan y sean del formato esperado
-            if (log.topics && log.data && log.topics[0] === keccak256(stringToBytes("SessionCreada(uint256,bytes32,uint256)"))) {
-                 return decodeEventLog({
-                    abi: [sessionCreadaEventAbi], // ABI debe ser un array
-                    data: log.data as Hex,
-                    topics: log.topics as [Hex, ...Hex[]],
+export function parsearEventoSessionCreada(
+    logs: readonly Log[] 
+): ParsedSessionCreadaEvent | null {
+    for (const log of logs) {
+        // Check if the log topic matches the event signature
+        // `log.topics[0]` is the event signature if it's not an anonymous event
+        if (log.topics[0] === SESSION_CREADA_EVENT_SIGNATURE) {
+            try {
+                // `decodeEventLog` is quite smart with ABI typing if the ABI is well-defined.
+                const decodedEvent = decodeEventLog({
+                    abi: [sessionCreadaEventAbi], // Pass the ABI item as an array
+                    data: log.data,
+                    topics: log.topics, // `log.topics` is already `readonly [Hex, ...Hex[]]` | `readonly Hex[]`
+                                       // if `log` is of type `Log`
+                }) as DecodeEventLogReturnType<[typeof sessionCreadaEventAbi]>; // Type assertion for better inference
+
+                // After decoding, check if it's the event name you expect (it should be if topics[0] matched)
+                // And more importantly, check if `args` exists.
+                if (decodedEvent.eventName === 'SessionCreada' && decodedEvent.args) {
+                    // Now, TypeScript should understand the structure of `decodedEvent.args`
+                  
+                    const args = decodedEvent.args as unknown as SessionCreadaEventArgs;
+
+                    return {
+                        eventName: 'SessionCreada', 
+                        sessionId: BigInt(args.sessionId), 
+                        hash: args.hash,                
+                        deadline: BigInt(args.deadline),  
+                    };
+                }
+            } catch (e: unknown) { 
+               
+                console.warn("Failed to decode a potential SessionCreada event:", e, {
+                    logAddress: log.address,
+                    logTopics: log.topics,
+                    logData: log.data,
                 });
+                
             }
-        } catch (e) {
-            // No es el evento que buscamos o hay un error al decodificar
         }
-        return null;
-    }).find(decoded => decoded && decoded.eventName === 'SessionCreada');
-
-    if (eventoDecodificado && eventoDecodificado.args) {
-        return {
-            eventName: eventoDecodificado.eventName,
-            sessionId: (eventoDecodificado.args as any).sessionId as bigint,
-            hash: (eventoDecodificado.args as any).hash as Hex,
-            deadline: (eventoDecodificado.args as any).deadline as bigint,
-        };
     }
-    return null;
+
+    return null; 
 }
