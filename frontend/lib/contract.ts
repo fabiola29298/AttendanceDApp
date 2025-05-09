@@ -1,6 +1,6 @@
 //lib/contract.ts
 export const CONTRACT_ADDRESS = "0x755Fe22F19cd98F6DD12D45d9f7f16a2E72d7725"
-
+export const CONTRACT_PROFE_ROLE_HASH = "0x60ec74c7fcf99b9c49ba1cb09329606b9246c4f8b72cda6c297671fb336e0dae"
 export const CONTRACT_ABI = [
     {
       "inputs": [
