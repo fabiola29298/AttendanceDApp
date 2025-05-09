@@ -5,7 +5,7 @@
 
 import { useState, useTransition } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
-import { registrarAlumno, esperarReciboTransaccion } from '@/lib/services/onlyProfe'; // Ajusta la ruta
+import { registrarAlumno, esperarReciboTransaccion } from '@/lib/services/onlyProfeServices'; // Ajusta la ruta
 import type { Hex } from 'viem';
 import { isAddress } from 'viem';
 
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Toaster, toast } from "sonner"; // Para notificaciones
+import { toast } from "sonner"; // Para notificaciones
 
 interface RegistrarAlumnoFormProps {
     onAlumnoRegistrado?: (address: Hex, txHash: Hex) => void;
@@ -84,8 +84,7 @@ export default function RegistrarAlumnoForm({ onAlumnoRegistrado }: RegistrarAlu
 
     return (
         <>
-            {/* Asegúrate de tener Toaster en tu layout principal o aquí si solo lo usas en este componente */}
-            {/* <Toaster richColors position="top-right" />  // Si no lo tienes en un layout global */}
+             
             <Card className="w-full mt-4">
                 <CardHeader>
                     <CardTitle>Registrar Nuevo Alumno</CardTitle>

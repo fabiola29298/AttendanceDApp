@@ -1,54 +1,16 @@
 "use client"
-
-//import { WaitlistSignup } from "./components/waitlist-signup" 
+  
 import Navbar from "@/components/navbar/Navbar";
 
-const backgroundStyle = `
-  .bg-pattern {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-      linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .content {
-    position: relative;
-    z-index: 2;
-  }
-`
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-})   {
+export default function RootLayout()   {
   return (
-    <main
-      className="min-h-screen items-center justify-center"
-      style={{
-        background: "radial-gradient(circle at center, #1E40AF, #000000)",
-      }}
-    >
-      <style jsx global>
-        {backgroundStyle}
-      </style>
-      <div className="bg-pattern"></div>
+    <div>
       <Navbar />
       <div className="content w-full">
-      
       <div className="flex flex-col gap-[32px] row-start-2 items-center text-center"> 
       <div className="max-w-2/3  my-9 p-9 shadow-[0px_2px_0px_0px_rgba(24,25,31,1.00)]  outline-zinc-900 overflow-hidden rounded-xl bg-white/5  ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-blue-500 ">
-            
              
             <div className="mb-8 ">
-             
                 <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-br from-gray-200 to-gray-600">
                     Bienvenido
                 </h1>
@@ -59,6 +21,6 @@ export default function RootLayout({
       </div> 
        
       </div> 
-    </main>
+    </div>
   )
 }

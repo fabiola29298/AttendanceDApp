@@ -5,7 +5,7 @@
 
 import { useState, useTransition } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
-import { crearNuevaSesion, esperarReciboTransaccion } from '@/lib/services/onlyProfe'; // Ajusta la ruta
+import { crearNuevaSesion, esperarReciboTransaccion } from '@/lib/services/onlyProfeServices'; // Ajusta la ruta
 import type { Hex } from 'viem';
 
 // Importaciones de shadcn/ui

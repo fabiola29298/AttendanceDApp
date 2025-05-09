@@ -4,14 +4,14 @@ import { usePrivy } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
 
-import { checkHasProfeRole } from '@/lib/services/onlyProfe'; // Ajusta la ruta
+import { checkHasProfeRole } from '@/lib/services/onlyProfeServices'; // Ajusta la ruta
 import type { Hex } from 'viem';
 import ProfesorDashboardContent from "./ProfesorDashboardContent";
 import StudentDashboardContent from "./StudentDashboardContent";
 
  
 function LoadingComponent() {
-    return <p>Cargando datos del usuario y rol...</p>;
+    return <p className="text-white">Cargando datos del usuario y rol...</p>;
 }
 
 export default function Dashboard() {
@@ -57,16 +57,16 @@ export default function Dashboard() {
         return <LoadingComponent />;
     }
 
-    if (!authenticated && ready) { // Asegurarse que ready sea true antes de mostrar contenido de no autenticado
+    if (!authenticated && ready) {  
         return (
             <div>
                 <p>Por favor, inicia sesión para acceder al dashboard.</p>
-                 {/* Aquí podría ir tu botón de login de AuthButtons si no está en un layout */}
+                  
             </div>
         );
     }
 
-    // Solo renderizar dashboards si estamos autenticados y el rol ha sido determinado
+    
     if (authenticated && isProfe !== null) {
         return (
             <>

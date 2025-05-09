@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useRouter } from 'next/navigation'; 
 import { SessionList } from '@/components/dashboard/SessionList';
 import { ClaimTokenDialog } from '@/components/dashboard/ClaimTokenDialog';
-import { getAllSessions, isAllowedStudent, getTokenBalance } from '@/lib/services/asistencia';
+import { getAllSessions, isAllowedStudent, getTokenBalance } from '@/lib/services/onlyStudentServices';
 import type { Session } from '@/types/session';
 
 

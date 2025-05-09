@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner"
-import { claimTokens, waitForTransaction } from '@/lib/services/asistencia';
+import { claimTokens, waitForTransaction } from '@/lib/services/onlyStudentServices';
 
 interface ClaimTokenDialogProps {
     isOpen: boolean;

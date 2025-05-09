@@ -29,8 +29,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <RootProvider>
-          
+        <main
+            className="min-h-screen items-center justify-center"
+            style={{
+              background: "radial-gradient(circle at center, #1E40AF, #000000)",
+            }}
+          >
+          <div className="bg-pattern"></div>  
           {children}
+          </main>
         </RootProvider>
       </body>
     </html>
