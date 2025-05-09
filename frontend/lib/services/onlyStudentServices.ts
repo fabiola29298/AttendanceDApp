@@ -29,6 +29,7 @@ export async function getAllSessions(): Promise<Record<number, Session>> {
                 currentId++;
             } catch (error) {
                 continueSearching = false;
+                console.log(error)
             }
         }
 

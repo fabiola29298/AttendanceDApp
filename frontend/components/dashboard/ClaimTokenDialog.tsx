@@ -35,7 +35,7 @@ export function ClaimTokenDialog({ isOpen, onClose, sessionId }: ClaimTokenDialo
              } else {
                  throw new Error("Error al reclamar los tokens");
              }
-         } catch (error: any) {
+         } catch (error) {
              console.error('Error al reclamar tokens:', error);
              toast.error("Error al reclamar los tokens");
          } finally {
