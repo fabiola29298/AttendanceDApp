@@ -7,15 +7,28 @@ import {
     keccak256,
     stringToBytes
 } from 'viem';
-
- 
+/*
+export async function getProfeRoleBytes(): Promise<Hex> {
+    try {
+        const role = await publicClient.readContract({
+            address: CONTRACT_ADDRESS,
+            abi: CONTRACT_ABI,
+            functionName: 'PROFE_ROLE',
+        });
+        return role as Hex;
+    } catch (error) {
+        console.error("Error obteniendo PROFE_ROLE:", error);
+        throw error;
+    }
+}
+*/ 
 /**
  * Verifica si una dirección tiene el rol de profe.
  * @param role El hash del rol  PROFE_ROLE 
  * @param accountAddress La dirección de la cuenta a verificar.
  * @returns true si la cuenta tiene el rol, false en caso contrario.
  */
-export async function checkHasProfeRole(  accountAddress: Hex): Promise<boolean> {
+export async function checkHasProfeRole(  accountAddress: string): Promise<boolean> {
     try {
         const hasRole = await publicClient.readContract({
             address: CONTRACT_ADDRESS,
@@ -29,7 +42,7 @@ export async function checkHasProfeRole(  accountAddress: Hex): Promise<boolean>
         throw error;
     }
 }
-
+ 
 
 /**
  * Registra un nuevo alumno. Solo puede ser llamado por una cuenta con PROFE_ROLE.

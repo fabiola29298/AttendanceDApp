@@ -8,22 +8,56 @@ import { ClaimTokenDialog } from '@/components/dashboard/ClaimTokenDialog';
 import { getAllSessions, isAllowedStudent, getTokenBalance } from '@/lib/services/asistencia';
 import type { Session } from '@/types/session';
 import { toast } from "sonner";
+import { checkHasProfeRole } from '@/lib/services/onlyProfe'; // Ajusta la ruta
+import type { Hex } from 'viem';
+import ProfesorDashboardContent from "./ProfesorDashboardContent";
+import StudentDashboardContent from "./StudentDashboardContent";
+
+ 
+function LoadingComponent() {
+    return <p>Cargando datos del usuario y rol...</p>;
+}
 
 export default function Dashboard() {
-    const { authenticated, user } = usePrivy();
+    const { ready, authenticated, user, logout } = usePrivy();
     const router = useRouter();
     const [sessions, setSessions] = useState<Record<number, Session>>({});
     const [loading, setLoading] = useState(true);
     const [isAllowed, setIsAllowed] = useState(false);
     const [balance, setBalance] = useState<bigint>(BigInt(0));
     const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
+    const [isProfe, setIsProfe] = useState<boolean | null>(null);
+    const [isLoadingRole, setIsLoadingRole] = useState<boolean>(true);
 
     useEffect(() => {
-        if (!authenticated) {
+        if (ready && !authenticated) {
             router.push('/');
         }
-    }, [authenticated, router]);
+        if (ready && authenticated && user?.wallet?.address) {
+            const userAddress = user.wallet.address as Hex;
+            setIsLoadingRole(true);
 
+            checkHasProfeRole(userAddress)
+                .then((hasRole) => {
+                    setIsProfe(hasRole);
+                })
+                .catch((error) => {
+                    console.error("Error al verificar el rol de profesor:", error);
+                    setIsProfe(false);
+                })
+                .finally(() => {
+                    setIsLoadingRole(false);
+                });
+        } else if (ready && authenticated && !user?.wallet?.address) {
+            console.warn("Usuario autenticado pero sin dirección de wallet.");
+            setIsProfe(false);
+            setIsLoadingRole(false);
+        }
+    }, [authenticated, router]);
+    const handleLogout = async () => {
+        await logout();
+        router.push('/');
+    };
     useEffect(() => {
         async function loadData() {
             if (authenticated && user?.wallet?.address) {
@@ -48,7 +82,30 @@ export default function Dashboard() {
 
         loadData();
     }, [authenticated, user]);
+     
 
+    if (!ready || (authenticated && isLoadingRole && isProfe === null) ) {
+        return <LoadingComponent />;
+    }
+
+    if (!authenticated && ready) { // Asegurarse que ready sea true antes de mostrar contenido de no autenticado
+        return (
+            <div>
+                <p>Por favor, inicia sesión para acceder al dashboard.</p>
+                 {/* Aquí podría ir tu botón de login de AuthButtons si no está en un layout */}
+            </div>
+        );
+    }
+
+    // Solo renderizar dashboards si estamos autenticados y el rol ha sido determinado
+    if (authenticated && isProfe !== null) {
+        return (
+            <>
+                <button onClick={handleLogout} style={{ position: 'absolute', top: 10, right: 10 }}>Logout</button>
+                {isProfe ? <ProfesorDashboardContent /> : <StudentDashboardContent />}
+            </>
+        );
+    }
     const handleSelectSession = (id: number) => {
         if (!isAllowed) {
             toast.error("No estás registrado como alumno permitido");
@@ -69,50 +126,5 @@ export default function Dashboard() {
 
     if (!authenticated) return null;
 
-    return (
-        <div className="w-11/12 my-9 p-9 shadow-[0px_2px_0px_0px_rgba(24,25,31,1.00)]  outline-zinc-900 overflow-hidden rounded-xl bg-white/5  ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-blue-500 ">
-            
-             
-            <div className="mb-8 ">
-             
-                <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-br from-gray-200 to-gray-600">
-                    Bienvenido
-                </h1> 
-                <p className="text-sxl text-gray-300">
-                {user?.wallet?.address}
-                </p>
-                <p className="text-sxl mb-8 text-gray-300">
-                    Balance: {balance.toString()} tokens
-                </p>
-                {!isAllowed && (
-                    <p className="text-sxl mb-8 text-rose-300 ">
-                        No estás registrado como alumno permitido
-                    </p>
-
-                )}
-            </div>
-
-            {loading ? (
-                 
-                <p>Cargando sesiones...</p>
-            ) : (
-                <SessionList
-                    sessions={sessions}
-                    onSelectSession={handleSelectSession}
-                />
-            )}
-
-            {selectedSessionId && (
-                <ClaimTokenDialog
-                    isOpen={true}
-                    onClose={handleCloseDialog}
-                    sessionId={selectedSessionId}
-                />
-
-            )}
-            
-            
-        </div>
-        
-    );
+    return <LoadingComponent />;
 }
