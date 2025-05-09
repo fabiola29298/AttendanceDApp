@@ -61,7 +61,7 @@ export async function registrarAlumno(
             address: CONTRACT_ADDRESS,
             abi: CONTRACT_ABI,
             functionName: 'registrarAlumno',
-            args: [BigInt(alumnoAddress)],
+            args: [alumnoAddress],
         }); 
         return hash;
     } catch (error) {
@@ -110,4 +110,19 @@ export async function crearNuevaSesion(
  */
 export function calcularHashPalabra(palabra: string): Hex {
     return keccak256(stringToBytes(palabra));
+}
+
+export async function esperarReciboTransaccion(txHash: Hex)
+: Promise<{ status: 'success' | 'error' }>  {
+    try {
+        const transactionReceipt = await publicClient.waitForTransactionReceipt({
+            hash: txHash,
+        });
+        return {
+             status: transactionReceipt.status === 'success' ? 'success' : 'error'
+        };
+    } catch (error) {
+        console.error(`Error esperando el recibo de la transacción ${txHash}:`, error);
+        throw error;
+    }
 }

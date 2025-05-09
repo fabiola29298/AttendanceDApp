@@ -3,11 +3,7 @@
 import { usePrivy } from '@privy-io/react-auth';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; 
-import { SessionList } from '@/components/dashboard/SessionList';
-import { ClaimTokenDialog } from '@/components/dashboard/ClaimTokenDialog';
-import { getAllSessions, isAllowedStudent, getTokenBalance } from '@/lib/services/asistencia';
-import type { Session } from '@/types/session';
-import { toast } from "sonner";
+
 import { checkHasProfeRole } from '@/lib/services/onlyProfe'; // Ajusta la ruta
 import type { Hex } from 'viem';
 import ProfesorDashboardContent from "./ProfesorDashboardContent";
@@ -21,11 +17,7 @@ function LoadingComponent() {
 export default function Dashboard() {
     const { ready, authenticated, user, logout } = usePrivy();
     const router = useRouter();
-    const [sessions, setSessions] = useState<Record<number, Session>>({});
-    const [loading, setLoading] = useState(true);
-    const [isAllowed, setIsAllowed] = useState(false);
-    const [balance, setBalance] = useState<bigint>(BigInt(0));
-    const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
+ 
     const [isProfe, setIsProfe] = useState<boolean | null>(null);
     const [isLoadingRole, setIsLoadingRole] = useState<boolean>(true);
 
@@ -58,30 +50,7 @@ export default function Dashboard() {
         await logout();
         router.push('/');
     };
-    useEffect(() => {
-        async function loadData() {
-            if (authenticated && user?.wallet?.address) {
-                try {
-                    setLoading(true);
-                    const [sessionsData, allowed, tokenBalance] = await Promise.all([
-                        getAllSessions(),
-                        isAllowedStudent(user.wallet.address),
-                        getTokenBalance(user.wallet.address)
-                    ]);
-
-                    setSessions(sessionsData);
-                    setIsAllowed(allowed);
-                    setBalance(tokenBalance);
-                } catch (error) {
-                    console.error('Error loading data:', error);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        }
-
-        loadData();
-    }, [authenticated, user]);
+    
      
 
     if (!ready || (authenticated && isLoadingRole && isProfe === null) ) {
@@ -106,24 +75,6 @@ export default function Dashboard() {
             </>
         );
     }
-    const handleSelectSession = (id: number) => {
-        if (!isAllowed) {
-            toast.error("No estás registrado como alumno permitido");
-            return;
-        }
-
-        if (!sessions[id].activa) {
-            toast.error("Esta sesión no está activa");
-            return;
-        }
-        toast.warning ("Esta sesión si está activa");
-        setSelectedSessionId(id);
-    };
-
-    const handleCloseDialog = () => {
-        setSelectedSessionId(null);
-    };
-
     if (!authenticated) return null;
 
     return <LoadingComponent />;
