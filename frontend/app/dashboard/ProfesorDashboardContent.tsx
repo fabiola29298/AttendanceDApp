@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import RegistrarAlumnoForm from '@/components/dashboard/RegistrarAlumnoForm';
+import CrearSesionForm from '@/components/dashboard/CrearSesionForm';
 import {
     type Hex 
 } from 'viem';
@@ -9,10 +10,12 @@ export default function ProfesorDashboardContent(){
     const [balance] = useState<bigint>(BigInt(0));
     
     const handleAlumnoRegistrado = (address: Hex, txHash: Hex) => {
-        console.log(`Callback: Alumno ${address} registrado con tx ${txHash}`);
-        // Aquí podrías, por ejemplo, refrescar una lista de alumnos registrados
-        // o mostrar una notificación más persistente.
+        console.log(`Callback: Alumno ${address} registrado con tx ${txHash}`); 
     };
+    const handleSesionCreada = (sessionId: bigint, hashPalabra: Hex, deadline: bigint, txHash: Hex) => {
+        console.log(`Callback: Sesión ${sessionId} creada. Hash: ${hashPalabra}, Deadline: ${new Date(Number(deadline) * 1000)}, Tx: ${txHash}`);
+     };
+
     return (
         <div className="w-11/12 my-9 p-9 shadow-[0px_2px_0px_0px_rgba(24,25,31,1.00)]  outline-zinc-900 overflow-hidden rounded-xl bg-white/5  ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-blue-500 ">
                     
@@ -30,6 +33,7 @@ export default function ProfesorDashboardContent(){
                 <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>
                 <p className=" font-bold">Aquí puedes registrar alumnos, crear sesiones.</p>
                 <RegistrarAlumnoForm onAlumnoRegistrado={handleAlumnoRegistrado} />
+                <CrearSesionForm onSesionCreada={handleSesionCreada} /> 
                
             </div>
         </div>

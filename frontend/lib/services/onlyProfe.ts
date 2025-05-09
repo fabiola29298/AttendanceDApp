@@ -5,6 +5,8 @@ import { getWalletClient } from '@/lib/viem';
 import {
     type Hex,
     keccak256,
+    parseAbiItem,
+    decodeEventLog,
     stringToBytes
 } from 'viem';
 /*
@@ -81,7 +83,7 @@ export async function registrarAlumno(
 export async function crearNuevaSesion(
     palabraSecreta: string,
     duracionEnDias: bigint, // Usar bigint para uint256 
-): Promise<string> {
+): Promise<Hex> {
     
     try {
         const { walletClient, address }  = await getWalletClient();
@@ -125,4 +127,34 @@ export async function esperarReciboTransaccion(txHash: Hex)
         console.error(`Error esperando el recibo de la transacción ${txHash}:`, error);
         throw error;
     }
+}
+
+const sessionCreadaEventAbi = parseAbiItem('event SessionCreada(uint256 indexed sessionId, bytes32 hash, uint256 deadline)');
+
+export function parsearEventoSessionCreada(logs: any[]) { // `any[]` porque el tipo exacto de log depende de la fuente
+    const eventoDecodificado = logs.map(log => {
+        try {
+            // Asegúrate que el log.topics y log.data existan y sean del formato esperado
+            if (log.topics && log.data && log.topics[0] === keccak256(stringToBytes("SessionCreada(uint256,bytes32,uint256)"))) {
+                 return decodeEventLog({
+                    abi: [sessionCreadaEventAbi], // ABI debe ser un array
+                    data: log.data as Hex,
+                    topics: log.topics as [Hex, ...Hex[]],
+                });
+            }
+        } catch (e) {
+            // No es el evento que buscamos o hay un error al decodificar
+        }
+        return null;
+    }).find(decoded => decoded && decoded.eventName === 'SessionCreada');
+
+    if (eventoDecodificado && eventoDecodificado.args) {
+        return {
+            eventName: eventoDecodificado.eventName,
+            sessionId: (eventoDecodificado.args as any).sessionId as bigint,
+            hash: (eventoDecodificado.args as any).hash as Hex,
+            deadline: (eventoDecodificado.args as any).deadline as bigint,
+        };
+    }
+    return null;
 }
