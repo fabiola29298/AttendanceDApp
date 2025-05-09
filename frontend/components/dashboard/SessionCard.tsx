@@ -15,7 +15,7 @@ export function SessionCard({ session, onSelect }: SessionCardProps) {
     if (session.activa) {
         return (
             <div
-                className='p-4 border rounded-lg cursor-pointer transition-colors text-white
+                className='p-4 min-w-2/3 border rounded-lg cursor-pointer transition-colors text-white
                       border-green-400'
                 
             >
